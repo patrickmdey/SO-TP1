@@ -4,16 +4,24 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 
-void slaveCreator(int amount, int *pidArray, int pipefdArray[][2], int parentfd[2]);
+void slaveCreator(int amount, int *pidArray, int pipefdArray[][2], int parentfd[2], char * files[]);
 
 int main (int argc, char *argv[]){
     if(argc <= 1){
         printf("Input at least one file\n");
         return 0;
     }
+    int filenum = argc - 1;
+    int amount;
+    if (filenum <= 8)
+        amount = filenum;
+    else 
+        amount = 8;
 
-    int amount = 4;
+    
+
     pid_t pidArray[amount];
     int pipefdArray[amount][2];
     int parentfd[2];
@@ -28,12 +36,12 @@ int main (int argc, char *argv[]){
         exit(1);
     }
 
-    slaveCreator(amount, pidArray, pipefdArray, parentfd);
+    slaveCreator(amount, pidArray, pipefdArray, parentfd, argv);
     close(aux);
     close(parentfd[1]);
     //Mientras queden archivos
     char str[256];
-    for (int i = 0; i < amount; i++) {
+    for (int i = 0; i < amount; i++) {// while me quedan archivos
         read(0, str, 256);
         printf("string pid: %s\n", str);
         pid_t pid = atoi(str);
@@ -47,22 +55,24 @@ int main (int argc, char *argv[]){
             }
         }
         if (found) {
-            write(pipefdArray[index][1], "-", sizeof("-"));
+            write(pipefdArray[index][1], "-", sizeof("-"));// write nombre de siguiente archivo
         }
     }
 
-    for (int i = 0; i < amount; i++) 
+    for (int i = 0; i < amount; i++) {
+        //write(pipefdArray[i][1], "-", sizeof("-"));
         waitpid(pidArray[i], NULL, 0);
+    }
     
     printf("PARENT FINISHED!\n");
 
     return 0;
 }
 
-void slaveCreator(int amount, pid_t *pidArray, int pipefdArray[][2], int parentfd[2]){
-    int i;
+void slaveCreator(int amount, pid_t *pidArray, int pipefdArray[][2], int parentfd[2], char * files[]){
+    int i, j = 1;
 
-    for (i = 0; i < amount; i++) {
+    for (i = 0; i < amount; i++, j++) {
         
         if (pipe(pipefdArray[i]) == -1){
             perror("Error occured while excecuting pipe");
@@ -82,8 +92,8 @@ void slaveCreator(int amount, pid_t *pidArray, int pipefdArray[][2], int parentf
             int aux1 = pipefdArray[i][0];
             int aux2 = parentfd[1];
             if(dup2(pipefdArray[i][0], 0) == -1 || dup2(parentfd[1], 1) == -1) {
-                printf("%d\n", i);
                 perror("Error duping pipe");
+                exit(1);
             }
             close(aux1);
             close(aux2);
@@ -95,9 +105,9 @@ void slaveCreator(int amount, pid_t *pidArray, int pipefdArray[][2], int parentf
             }
         }
 
-        char * str = "Hola";
-        printf("Parent writing to pid: %d\n", pidArray[i]);
-        write(pipefdArray[i][1], str, sizeof(str));
+        
+        printf("Parent writing %s to pid: %d\n", files[j], pidArray[i]);
+        write(pipefdArray[i][1], files[j], strlen(files[j])+1);
     }
 
 }

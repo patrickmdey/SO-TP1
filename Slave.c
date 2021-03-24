@@ -7,17 +7,15 @@ static int itoa(int n, char s[]);
 static void reverse(char str[]);
 
 int main(int argc, const char * argv[]) {
-    char * str = malloc(sizeof(char) * 256);
-    read(0, str, 256);
+    char file[256] = {0};
+    read(0, file, 256);
     while (str[0] != '-') {
-        //printf("Input: %s\n", str);
+        //solve file filename
         char pidString[10];
         int len = itoa(getpid(), pidString);
         write(1, pidString, len+1);
-        //printf("%s\n", pidString);
         read(0, str, 256);   
-    } 
-    free(str);
+    }
     return 0;
 }
 
