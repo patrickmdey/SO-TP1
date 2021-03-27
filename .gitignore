@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+.DS_Store
+.bash_history
+
 # Object files
 *.o
 *.ko
@@ -52,5 +55,8 @@ Mkfile.old
 dkms.conf
 
 # Folders to ignore
-build/*
 files/*
+
+# Files to ignore
+Solver
+Slave

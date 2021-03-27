@@ -6,7 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "functions.h"
+
 void slaveCreator(int amount, int* pidArray, int pipefdArray[][2], int parentfd[2], char* files[]);
+static void parsePid(char * buff, const char *string);
 
 int main(int argc, char* argv[]) {
     if (argc <= 1) {
@@ -20,7 +23,9 @@ int main(int argc, char* argv[]) {
     // else
     //     amount = 8;
 
-    amount = filenum;
+    //amount = filenum;
+    amount = 2;
+    int currentfile = amount + 1;
 
     pid_t pidArray[amount];
     int pipefdArray[amount][2];
@@ -40,11 +45,14 @@ int main(int argc, char* argv[]) {
     close(aux);
     close(parentfd[1]);
     //Mientras queden archivos
-    char str[256] = { 0 };
-    for (int i = 0; i < amount; i++) {// while me quedan archivos
-        read(0, str, 256);
-        //printf("string pid: %s\n", str);
-        pid_t pid = atoi(str);
+    char str[4096] = { 0 };
+    while (currentfile < filenum) {// while me quedan archivos
+        //read(0, str, 4096);
+        getFileChar(str, 4096);
+        printf("%s\n", str);
+        char pidStr[10] = {0};
+        parsePid(pidStr, str);
+        pid_t pid = atoi(pidStr);
         printf("Parent recieves from child [pid: %d]\n", pid);
         int found = 0;
         int index;
@@ -55,13 +63,19 @@ int main(int argc, char* argv[]) {
             }
         }
         if (found) {
-            write(pipefdArray[index][1], "-", sizeof("-"));// write nombre de siguiente archivo
+            printf("Parent writting file: %s to pid: %d\n", argv[currentfile], pid);
+            int currentLen = strlen(argv[currentfile])+1;
+            write(pipefdArray[index][1], argv[currentfile++], currentLen);// write nombre de siguiente archivo
         }
     }
 
     for (int i = 0; i < amount; i++) {
-        //write(pipefdArray[i][1], "-", sizeof("-"));
-        waitpid(pidArray[i], NULL, 0);
+        write(pipefdArray[i][1], "-", sizeof("-")); // Aviso a todos mis hijos que terminen
+    }
+
+    for (int i = 0; i < amount; i++){
+        waitpid(-1, NULL, 0); // Espero a que terminen amount de mis hijos
+        
     }
 
     printf("PARENT FINISHED!\n");
@@ -109,5 +123,14 @@ void slaveCreator(int amount, pid_t* pidArray, int pipefdArray[][2], int parentf
         write(pipefdArray[i][1], files[j], strlen(files[j]) + 1);
     }
 
+}
+
+
+static void parsePid(char * buff, const char *string){
+    int j = 0;
+    for(int i = 5; string[i] != '\n'; i++){
+        buff[j++] = string[i];
+    }
+    buff[j] = 0;
 }
 
