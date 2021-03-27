@@ -60,3 +60,4 @@ files/*
 # Files to ignore
 Solver
 Slave
+result.txt
