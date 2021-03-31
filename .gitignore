@@ -56,8 +56,7 @@ dkms.conf
 
 # Folders to ignore
 files/*
+bin/*
 
 # Files to ignore
-Solver
-Slave
 result.txt

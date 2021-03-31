@@ -1,29 +1,29 @@
-all: Solver Slave Vista
+all: bin/Solver bin/Slave bin/Vista
 
 CC = gcc
-CFLAGS = -g -std=gnu99 -Wall -pedantic-errors
+CFLAGS = -g -std=c99 -Wall -pedantic-errors
 OFLAGS = -lpthread -lrt
 
-Functions.o: functions.c
-	$(CC) -c functions.c $(CFLAGS)
+bin/Functions.o: src/functions.c
+	$(CC) -c src/functions.c -o bin/functions.o $(CFLAGS)
 
-Solver: Solver.o functions.o
-	$(CC) Solver.o functions.o -o Solver $(OFLAGS)
+bin/Solver: bin/Solver.o bin/Functions.o
+	$(CC) bin/Solver.o bin/functions.o -o bin/Solver $(OFLAGS)
 
-Solver.o: Solver.c
-	$(CC) -c Solver.c $(CFLAGS)
+bin/Solver.o: src/Solver.c
+	$(CC) -c src/Solver.c -o bin/Solver.o $(CFLAGS) -I./include
 
-Slave: Slave.o functions.o
-	$(CC) Slave.o functions.o -o Slave
+bin/Slave: bin/Slave.o bin/Functions.o
+	$(CC) bin/Slave.o bin/functions.o -o bin/Slave
 
-Slave.o: Slave.c
-	$(CC) -c Slave.c $(CFLAGS)
+bin/Slave.o: src/Slave.c
+	$(CC) -c src/Slave.c -o bin/Slave.o $(CFLAGS) -I./include
 
-Vista: Vista.o
-	$(CC) Vista.o -o Vista $(OFLAGS)
+bin/Vista: bin/Vista.o
+	$(CC) bin/Vista.o -o bin/Vista $(OFLAGS)
 
-Vista.o: Vista.c
-	$(CC) -c Vista.c $(CFLAGS)
+bin/Vista.o: src/Vista.c
+	$(CC) -c src/Vista.c -o bin/Vista.o $(CFLAGS) -I./include
 
 clean:
-	rm *.o Solver Slave Vista
+	rm bin/*
