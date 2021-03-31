@@ -12,10 +12,8 @@
 int main(int argc, char * argv[]) {
     int shm_size;
 	if (argc == 1) {
-		//No recibi por linea de comandos leo de entrada estandard
         read(0, &shm_size, sizeof(int));
-	} 
-    else if (argc == 2){
+	} else if (argc == 2){
         shm_size = atoi(argv[1]);
 	} else {
         printf("Invalid arguments");
@@ -39,11 +37,6 @@ int main(int argc, char * argv[]) {
         exit(1);
     }
 
-    //int size = atoi(argv[2]);
-    /*if(ftruncate(buff_fd, size) == -1){
-        perror("Error occured while trying excecuting ftruncate");
-        exit(1);
-    }*/
 
     char * shmem = (char *) mmap(NULL, shm_size, PROT_READ, MAP_SHARED, shm_fd, 0);
     if(shmem == (void*) -1){
@@ -52,14 +45,10 @@ int main(int argc, char * argv[]) {
     }
     
 
-    //int * data = (int *) mapped;
-
     int done = 0;
     while (done == 0) {
-    	//printf("Esperando semaforo\n");
     	sem_wait(sem); // Me bloqueo hasta que me permitan leer
-    	//printf("Semaforo termino\n");
-        if (*shmem == 0) // EOF
+        if (*shmem == 0) // No había nada por leer
             done = 1;
         else
     	    shmem += printf("%s", shmem) + 1;
