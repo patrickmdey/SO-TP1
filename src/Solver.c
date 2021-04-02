@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
     close(aux);
     close(parentfd[1]);
 
-    FILE * resultptr = fopen("../result.txt", "w");
+    FILE * resultptr = fopen("./result.txt", "w");
     if(resultptr == NULL){
         perror("Error occurred while trying to open result.txt");
         exit(1);
