@@ -4,16 +4,16 @@ CC = gcc
 CFLAGS = -g -std=c99 -Wall -pedantic-errors
 OFLAGS = -lpthread -lrt
 
-bin/Functions.o: src/functions.c
+bin/functions.o: src/functions.c
 	$(CC) -c src/functions.c -o bin/functions.o $(CFLAGS)
 
-bin/Solver: bin/Solver.o bin/Functions.o
+bin/Solver: bin/Solver.o bin/functions.o
 	$(CC) bin/Solver.o bin/functions.o -o bin/Solver $(OFLAGS)
 
 bin/Solver.o: src/Solver.c
 	$(CC) -c src/Solver.c -o bin/Solver.o $(CFLAGS) -I./include
 
-bin/Slave: bin/Slave.o bin/Functions.o
+bin/Slave: bin/Slave.o bin/functions.o
 	$(CC) bin/Slave.o bin/functions.o -o bin/Slave
 
 bin/Slave.o: src/Slave.c

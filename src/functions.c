@@ -5,8 +5,9 @@
 void getFileChar(char *buffer, int maxsize){
     char c;
     int i = 0;
-    while((c = getchar()) != 0  && (unsigned int) c != (unsigned int)EOF && i < maxsize) {
+    while((c = getchar()) != 0  && (unsigned int) c != (unsigned int) EOF && i < maxsize) {
         buffer[i++] = c;
     }
     buffer[i] = 0;
+    return i;
 } 
