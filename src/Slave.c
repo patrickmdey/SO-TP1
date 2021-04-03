@@ -10,10 +10,7 @@
 #include <stdio.h>
 
 #include "functions.h"
-
-#define STRING_SIZE 256
-
-void runMinisat(const char* path);
+#include "slave.h"
 
 int main(int argc, const char* argv[]) {
     char file[STRING_SIZE] = { 0 };
@@ -25,16 +22,6 @@ int main(int argc, const char* argv[]) {
     }
 
     return 0;
-}
-
-int readStr(FILE * fd, char * buff, int maxsize) {
-	int i = 0;
-	char c;
-	while ((c = fgetc(fd)) != 0 && (unsigned int) c != (unsigned int)EOF && i < maxsize) {
-		buff[i++] = c;
-	}
-	buff[i] = 0;
-	return i;	
 }
 
 void runMinisat(const char* path) {
@@ -54,6 +41,16 @@ void runMinisat(const char* path) {
     int len = sprintf(out, "pid: %d\nfile: %s\n%s\n", getpid(), path, str);
     write(1, out, len + 1);
     pclose(ret);
+}
+
+int readStr(FILE * fd, char * buff, int maxsize) {
+    int i = 0;
+    char c;
+    while ((c = fgetc(fd)) != 0 && (unsigned int) c != (unsigned int)EOF && i < maxsize) {
+        buff[i++] = c;
+    }
+    buff[i] = 0;
+    return i;   
 }
 
 

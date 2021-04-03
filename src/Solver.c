@@ -15,11 +15,7 @@
 
 #include "functions.h"
 #include "shared_memory.h"
-
-
-void slaveCreator(int amount, int* pidArray, int pipefdArray[][2], int parentfd[2], char* files[]);
-static void parsePid(char * buff, const char *string);
-static char * openshm(int shm_size, int * shm_fd);
+#include "solver.h"
 
 int main(int argc, char* argv[]) {
     if (argc <= 1) {
@@ -46,10 +42,10 @@ int main(int argc, char* argv[]) {
     write(1, &shm_size, sizeof(int));
 
     int amount;
-    if (filenum < 8)
+    if (filenum < MAX_SLAVES)
         amount = filenum;
     else
-        amount = 8;
+        amount = MAX_SLAVES;
 
     int currentfile = amount + 1;
 
@@ -87,7 +83,7 @@ int main(int argc, char* argv[]) {
         shmem += size + 1;
         sem_post(sem);
 
-        char pidStr[10] = {0};
+        char pidStr[PID_MAX_LEN] = {0};
         parsePid(pidStr, str);
         pid_t pid = atoi(pidStr);
 
@@ -108,9 +104,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    for (int i = 0; i < amount; i++){
+
+    for (int i = 0; i < amount; i++)
         waitpid(-1, NULL, 0);
-    }
 
 
     shm_unlink(SHM_NAME);
